@@ -110,3 +110,23 @@ def login(user: UserIn):
 @app.get("/")
 def home():
     return {"status": "backend_ok"}
+@app.post("/create-checkout-session")
+def create_checkout_session():
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            mode="subscription",
+            line_items=[
+                {
+                    "price": STRIPE_PRICE_ID,
+                    "quantity": 1,
+                }
+            ],
+            success_url=f"{FRONTEND_URL}/success",
+            cancel_url=f"{FRONTEND_URL}/cancel",
+        )
+
+        return {"url": session.url}
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
