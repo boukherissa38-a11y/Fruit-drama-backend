@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, field_validator
 from passlib.context import CryptContext
 import sqlite3
 import os
+import re
 
 app = FastAPI()
 
@@ -39,9 +40,18 @@ def init_db():
 
 init_db()
 
+EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
 class UserIn(BaseModel):
-    email: EmailStr
+    email: str
     password: str
+
+    @field_validator("email")
+    @classmethod
+    def email_valid(cls, v):
+        if not EMAIL_RE.match(v):
+            raise ValueError("Email invalide")
+        return v
 
     @field_validator("password")
     @classmethod
