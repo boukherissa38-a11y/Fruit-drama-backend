@@ -5,6 +5,16 @@ from passlib.context import CryptContext
 import sqlite3
 import os
 import re
+import stripe
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID")
+FRONTEND_URL = os.getenv(
+    "FRONTEND_URL",
+    "https://site-web-creation.vercel.app"
+)
+
+stripe.api_key = STRIPE_SECRET_KEY
 
 app = FastAPI()
 
